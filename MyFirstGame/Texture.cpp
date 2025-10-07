@@ -2,6 +2,7 @@
 #include "Direct3D.h"
 #include <DirectXTex.h>
 
+// DirectXTexのライブラリをリンク
 #pragma comment(lib, "DirectXTex.lib")
 
 using namespace DirectX;
@@ -22,13 +23,11 @@ HRESULT Texture::Load(std::string fileName)
 
 	HRESULT hr;
 
-	//実際に読んでゆくぅ
+	//実際に読んでゆくぅ　　　　　 
 	std::wstring wfileName(fileName.begin(), fileName.end());
 	hr = LoadFromWICFile(wfileName.c_str(), WIC_FLAGS::WIC_FLAGS_NONE,
-						&metadata, image);
-
+						 &metadata, image);
 	if (FAILED(hr))
-
 	{
 		return S_FALSE;
 	}
@@ -41,14 +40,12 @@ HRESULT Texture::Load(std::string fileName)
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	Direct3D::pDevice->CreateSamplerState(&SamDesc, &pSampler_);
 
-
 	//シェーダーリソースビュー
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srv = {};
 	srv.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	srv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srv.Texture2D.MipLevels = 1;
-
 	hr = CreateShaderResourceView(Direct3D::pDevice,
 		image.GetImages(), image.GetImageCount(), metadata, &pSRV_);
 

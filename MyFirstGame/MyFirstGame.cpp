@@ -1,15 +1,20 @@
 ﻿// MyFirstGame.cpp : アプリケーションのエントリ ポイントを定義します。
-//
+
+
 
 #include "framework.h"
 #include "MyFirstGame.h"
 #include "Direct3D.h"
-#include "Quad.h"
+//#include "Quad.h"
 #include "Camera.h"
-#include "Dice.h"
+//#include "Dice.h"
+//#include "Sprite.h"
+#include "Transform.h"
+#include "Fbx.h"
+#include "Input.h"
 
 
-HWND hWnd = nullptr;
+HWND hWnd = nullptr; 
 
 
 
@@ -41,15 +46,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: ここにコードを挿入してください。
-   
+    // TODO: ここにコードを挿入してください
+    // 。   
     // グローバル文字列を初期化する
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_MYFIRSTGAME, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
-
    
-    // アプリケーション初期化の実行:
+    // アプリケーション初
+    // 期化の実行:
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
@@ -63,21 +68,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return 0;
     }   
 
+    //DirectInputの初期化
+    DirectInput8Create;
+
+
+    Camera::Initialize();
+
+    Input::Initialize(hWnd);
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MYFIRSTGAME));
 
     MSG msg = {};
 
     //Quad* q = new Quad();
-    Dice* dice = new Dice();
-    dice->Initialize();
+    /*Sprite* sprite = new Sprite();
+    hr = sprite->Initialize();*/
+
+    Fbx* fbx = new Fbx();
+    fbx->Load("Oden.fbx");
     if (FAILED(hr))
     {
         return 0;
     }
-
-
-    Camera::Initialize();
 
     // メイン メッセージ ループ:
     while (msg.message != WM_QUIT)
@@ -92,25 +104,61 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         //メッセージなし
-
+        // 
         //ゲームの処理
         Camera::Update(); //カメラの更新
+        Input::Update(); //入力更新
+
+        if (Input::IsKeyDown(DIK_ESCAPE))
+        {
+            static int cnt = 0;
+            cnt++;
+            if (cnt >= 3)
+            {
+                PostQuitMessage(0);
+            }
+        }
+
+        if (Input::IsMouseBottonUp(0))
+        {
+            static int cnt = 0;
+            cnt++;
+            if (cnt >= 3)
+            {
+                PostQuitMessage(0);
+            }
+        }
 
         Direct3D::BeginDraw();
+     
 
-       //描画処理
-        static float angle = 0.0f;
-        XMMATRIX mat = XMMatrixRotationX(XMConvertToRadians(angle));
-        XMMATRIX rix = XMMatrixRotationY(XMConvertToRadians(angle));
-        XMMATRIX matrix = mat * rix;
-        dice->Draw(matrix);
-        angle += 0.05f;
+        //描画処理
+        // static float angle = 0.0f;
+        //XMMATRIX mat = XMMatrixRotationX(XMConvertToRadians(angle));       
+        //XMMATRIX matrix = mat * rix;
+        //angle += 0.05f;
+
+        /*XMMATRIX mat = XMMatrixIdentity();
+        Transform trans_;
+        trans_.position_.x = 1.0f;
+        trans_.rotate_.x = 1.0f;
+        trans_.Calculation();
+        sprite->Draw(mat);*/
+
+        static Transform trans;
+        trans.position_.x = 1.0f;
+        trans.rotate_.y += 0.1f;
+        trans.Calculation();
+
+        fbx->Draw(trans);
         Direct3D::EndDraw();
-
     }
+
     //q->Release();
-    dice->Release();
-    SAFE_DELETE(dice);
+   
+    //SAFE_DELETE(sprite);
+    SAFE_DELETE(fbx);
+    Input::Release();
 
     Direct3D::Release();
 
@@ -222,6 +270,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
+        break;
+    case WM_MOUSEMOVE:
+        {
+            int x = LOWORD(lParam);
+            int y = HIWORD(lParam);
+            Input::SetMousePosition(x, y);
+            OutputDebugStringA((std::to_string(x) + "," + std::to_string(y) + "\n").c_str());
+        }
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
