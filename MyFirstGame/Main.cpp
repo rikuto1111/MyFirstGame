@@ -5,18 +5,14 @@
 #include "Engine/framework.h"
 #include "Main.h"
 #include "Engine/Direct3D.h"
-//#include "Quad.h"
+
 #include "Engine/Camera.h"
-//#include "Dice.h"
-//#include "Sprite.h"
 #include "Engine/Transform.h"
-#include "Engine/Fbx.h"
 #include "Engine/Input.h"
+#include "Engine/RootJob.h"
 
 
 HWND hWnd = nullptr; 
-
-
 
 #define MAX_LOADSTRING 100
 
@@ -26,6 +22,7 @@ const wchar_t* WIN_CLASS_NAME = L"SANPLE GAME WINDOW"; //ウィンドウクラ�
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ //SVGAサイズ
 
+RootJob* pRootJob = nullptr;
 
 // グローバル変数:
 HINSTANCE hInst;                                // 現在のインターフェイス
@@ -80,16 +77,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg = {};
 
-    //Quad* q = new Quad();
-    /*Sprite* sprite = new Sprite();
-    hr = sprite->Initialize();*/
+    pRootJob = new RootJob(nullptr);
+    pRootJob->Initialize();
 
-    Fbx* fbx = new Fbx();
-    fbx->Load("Oden.fbx");
-    if (FAILED(hr))
-    {
-        return 0;
-    }
+    
 
     // メイン メッセージ ループ:
     while (msg.message != WM_QUIT)
@@ -108,6 +99,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         //ゲームの処理
         Camera::Update(); //カメラの更新
         Input::Update(); //入力更新
+
+        pRootJob->Update();
 
         if (Input::IsKeyDown(DIK_ESCAPE))
         {
@@ -130,36 +123,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         Direct3D::BeginDraw();
-     
 
-        //描画処理
-        // static float angle = 0.0f;
-        //XMMATRIX mat = XMMatrixRotationX(XMConvertToRadians(angle));       
-        //XMMATRIX matrix = mat * rix;
-        //angle += 0.05f;
-
-        /*XMMATRIX mat = XMMatrixIdentity();
-        Transform trans_;
-        trans_.position_.x = 1.0f;
-        trans_.rotate_.x = 1.0f;
-        trans_.Calculation();
-        sprite->Draw(mat);*/
-
-        static Transform trans;
-        trans.position_.x = 1.0f;
-        trans.rotate_.y += 0.1f;
-        trans.Calculation();
-
-        fbx->Draw(trans);
+        
+        //pRootJobから、すべてのオブジェクトの描画をする
+       
         Direct3D::EndDraw();
     }
 
-    //q->Release();
-   
-    //SAFE_DELETE(sprite);
-    SAFE_DELETE(fbx);
+    pRootJob->Release();
     Input::Release();
-
     Direct3D::Release();
 
     return (int) msg.wParam;

@@ -1,6 +1,7 @@
 #include "RootJob.h"
 
 RootJob::RootJob(GameObject* parent)
+	:GameObject(parent, "RootJob")
 {
 }
 
