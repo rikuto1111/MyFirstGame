@@ -8,6 +8,10 @@ GameObject::GameObject()
 GameObject::GameObject(GameObject* parent, const std::string& name)
 	:pParent_(parent), objectName_(name)
 {
+	if (pParent_ != nullptr)
+	{
+		transform_.pParent_ = &(parent->transform_);
+	}
 }
 
 GameObject::~GameObject()
@@ -29,7 +33,7 @@ void GameObject::DrawSub()
 
 void GameObject::UpdateSub()
 {
-	this->Update();
+	Update();
 
 	for (auto child : childList_)
 	{
@@ -39,9 +43,19 @@ void GameObject::UpdateSub()
 
 void GameObject::ReleaseSub()
 {
-	this->Release();
+	Release();
 	for (auto child : childList_)
 	{
 		child->ReleaseSub();
 	}
+}
+
+void GameObject::SetPosition(XMFLOAT3 position)
+{
+	transform_.position_ = position;
+}
+
+void GameObject::SetPosition(float x, float y, float z)
+{
+	SetPosition(XMFLOAT3(x, y, z));
 }
