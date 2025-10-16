@@ -29,7 +29,7 @@ void GameObject::DrawSub()
 
 void GameObject::UpdateSub()
 {
-	Update();
+	this->Update();
 
 	for (auto child : childList_)
 	{
@@ -39,4 +39,9 @@ void GameObject::UpdateSub()
 
 void GameObject::ReleaseSub()
 {
+	this->Release();
+	for (auto child : childList_)
+	{
+		child->ReleaseSub();
+	}
 }
