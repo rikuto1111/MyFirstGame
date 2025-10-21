@@ -11,6 +11,7 @@ class Player :
     Fbx* pFbx_;
     ChildOden* pRChildOden_;
     ChildOden* pLChildOden_;
+    int hModel_;
 public:
     Player(GameObject* parent);
     ~Player();
