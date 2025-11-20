@@ -29,7 +29,7 @@ void ChildOden::Initialize()
 
 void ChildOden::Update()
 {
-	transform_.rotate_.y += 2.0f;
+	transform_.rotate_.y += 0.5f;
 }
 
 void ChildOden::Draw()

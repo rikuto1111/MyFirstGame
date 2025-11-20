@@ -38,6 +38,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
     outData.pos = mul(pos, matWVP);
+    uv.w = 1;
     outData.uv = uv.xy; //UV座標はそのまま
    
     
@@ -62,13 +63,13 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 color;
     if (useTexture == 1)
     {
-        color = g_texture.Sample(g_sampler, inData.uv) * inData.color; //テクスチャーから色を取得
+        color = g_texture.Sample(g_sampler, inData.uv); //テクスチャーから色を取得
     }
     else
     {
-        color = float4(1, 1, 1, 1);
+        color = diffuseColor;
 
     }
     //float4 ret = float4(inData.uv.x, inData.uv.y, 0, 1);
-    return color;
+    return color * inData.color;
 }

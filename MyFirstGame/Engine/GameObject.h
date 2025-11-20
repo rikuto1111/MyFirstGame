@@ -8,6 +8,8 @@
 using std::string;
 using std::list;
 
+class SphereCollider;
+
 class GameObject
 {
 private:
@@ -17,6 +19,7 @@ protected:
 	Transform	transform_;
 	GameObject* pParent_;
 	string	objectName_;
+	SphereCollider* pCollider_;
 
 public:
 	GameObject();
@@ -34,6 +37,14 @@ public:
 	void SetPosition(XMFLOAT3 position);
 	void SetPosition(float x, float y, float z);
 	void KillMe();
+
+	GameObject* GetRootJob();
+	GameObject* FindChildObject(const string& name);
+	GameObject* FindObject(const string& name);
+
+	void AddCollider(SphereCollider* pCollider);
+	void Collision(GameObject* pTarget);
+	void RoundRobin(GameObject* pTarget);
 
 	template<class T>
 	GameObject* Instantiate(GameObject* parent)

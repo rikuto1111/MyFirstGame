@@ -11,7 +11,7 @@ Transform::Transform()
 	rotate_ = XMFLOAT3(0, 0, 0);
 	scale_ = XMFLOAT3(1, 1, 1);
 	
-}
+}	
 
 Transform::~Transform()
 {
